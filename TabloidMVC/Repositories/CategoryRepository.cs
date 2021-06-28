@@ -31,6 +31,7 @@ namespace TabloidMVC.Repositories
                         });
                     }
 
+
                     reader.Close();
 
                     return categories;
