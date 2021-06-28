@@ -56,10 +56,11 @@ namespace TabloidMVC.Controllers
             {
                 comment.UserProfileId = GetCurrentUserProfileId();
                 _commentRepo.CreateComment(comment);
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(comment);
             }
         }
 
