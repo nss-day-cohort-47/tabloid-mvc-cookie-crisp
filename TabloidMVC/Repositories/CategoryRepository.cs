@@ -14,7 +14,10 @@ namespace TabloidMVC.Repositories
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT id, name FROM Category";
+                    cmd.CommandText = @"
+                        SELECT id, name FROM Category
+                        ORDER BY name ASC";
+
                     var reader = cmd.ExecuteReader();
 
                     var categories = new List<Category>();
@@ -27,6 +30,7 @@ namespace TabloidMVC.Repositories
                             Name = reader.GetString(reader.GetOrdinal("name")),
                         });
                     }
+
 
                     reader.Close();
 
