@@ -69,6 +69,7 @@ namespace TabloidMVC.Controllers
                 return View(vm);
             }
         }
+
         public IActionResult MyPosts()
         {
             int CurrentUser = GetCurrentUserProfileId();
