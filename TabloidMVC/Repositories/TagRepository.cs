@@ -40,7 +40,7 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"
                     SELECT Id, [Name] 
                     FROM Tag
-ORDER BY name ASC ";
+                    ORDER BY name ASC ";
                     //SQL request to database
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -64,6 +64,31 @@ ORDER BY name ASC ";
                     //close connection and return full list
                 }
             }
+        }
+
+        public void AddTag(Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                //open connection
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Tag ([Name])
+                    OUTPUT INSERTED.ID
+                    VALUES (@name);
+                    ";
+
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
+                    // "OUTPUT INSERTED.ID" tells program to create id // AddWithValue adds object to the database and tag.Name tells which column and row
+
+                    int newlyCreatedId = (int)cmd.ExecuteScalar();
+                    tag.Id = newlyCreatedId;
+                }
+            }
+
         }
     }
 }
