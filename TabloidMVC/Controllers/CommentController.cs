@@ -13,6 +13,12 @@ namespace TabloidMVC.Controllers
 {
     public class CommentController : Controller
     {
+
+        private int GetCurrentUserProfileId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
+        }
         private readonly IPostRepository _postRepo;
         private readonly ICommentRepository _commentRepo;
 
@@ -44,11 +50,12 @@ namespace TabloidMVC.Controllers
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Comment comment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                comment.UserProfileId = GetCurrentUserProfileId();
+                _commentRepo.CreateComment(comment);
             }
             catch
             {
