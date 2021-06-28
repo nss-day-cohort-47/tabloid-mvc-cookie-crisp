@@ -52,16 +52,19 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Comment comment)
         {
-            try
-            {
+            //try
+            //{
                 comment.UserProfileId = GetCurrentUserProfileId();
+
                 _commentRepo.CreateComment(comment);
+
                 return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View(comment);
-            }
+
+            //}
+            //catch
+            //{
+            //    return View(comment);
+            //}
         }
 
         // GET: CommentController/Edit/5
