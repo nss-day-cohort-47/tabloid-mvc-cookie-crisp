@@ -71,14 +71,21 @@ namespace TabloidMVC.Controllers
             }
         }
 
+        public ActionResult Delete(int id)
+        {
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            return View(post);
+        }
+
         // POST: Post/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Post post)
+        public ActionResult Delete(int Id, Post post)
         {
             try
             {
-                _postRepository.DeletePost(id);
+                _postRepository.DeletePost(Id);
 
                 return RedirectToAction("Index");
             }
@@ -128,6 +135,6 @@ namespace TabloidMVC.Controllers
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return int.Parse(id);
           }
-        }
+     }
 
 }
