@@ -28,13 +28,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Comment.Content" class="control-label"></label>
-                <input asp-for="Comment.Content" class="form-control" />
-                <span asp-validation-for="Comment.Content" class="text-danger"></span>
+                <textarea asp-for="Comment.Content" class="form-control" rows="4" cols="50"> </textarea>
             </div>
             <div class="form-group">
-                <label asp-for="Comment.CreateDateTime" class="control-label"></label>
-                <input asp-for="Comment.CreateDateTime" class="form-control" />
-                <span asp-validation-for="Comment.CreateDateTime" class="text-danger"></span>
+                @*<label asp-for="Comment.CreateDateTime" class="control-label"></label>*@
+                <input type="date" value="@DateTime.Now" asp-for="Comment.CreateDateTime" class="form-control" type="hidden" />
+                @*<span asp-validation-for="Comment.CreateDateTime" class="text-danger"></span>*@
             </div>
             <div class="form-group">
                 <input type="hidden" asp-for="Comment.PostId" />
