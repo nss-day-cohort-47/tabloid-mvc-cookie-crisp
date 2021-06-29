@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using TabloidMVC.Models;
@@ -62,7 +63,7 @@ namespace TabloidMVC.Controllers
                 _postRepository.Add(vm.Post);
 
                 return RedirectToAction("Details", new { id = vm.Post.Id });
-            } 
+            }
             catch
             {
                 vm.CategoryOptions = _categoryRepository.GetAll();
@@ -70,17 +71,46 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        public IActionResult MyPosts()
+        public ActionResult Edit(int id)
         {
-            int CurrentUser = GetCurrentUserProfileId();
-            List<Post> posts = _postRepository.GetUsersPosts(CurrentUser);
-            return View(posts);
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
         }
 
-        private int GetCurrentUserProfileId()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Post post)
         {
-            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return int.Parse(id);
+            try
+            {
+                _postRepository.UpdatePost(post);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(post);
+            }
         }
-    }
+
+            public IActionResult MyPosts()
+            {
+                int CurrentUser = GetCurrentUserProfileId();
+                List<Post> posts = _postRepository.GetUsersPosts(CurrentUser);
+                return View(posts);
+            }
+
+            private int GetCurrentUserProfileId()
+            {
+                string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return int.Parse(id);
+            }
+        }
+
 }
