@@ -8,11 +8,18 @@ using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Repositories;
 using Microsoft.VisualBasic;
+using TabloidMVC.Models.ViewModels;
 
 namespace TabloidMVC.Controllers
 {
     public class CommentController : Controller
     {
+
+        private int GetCurrentUserProfileId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
+        }
         private readonly IPostRepository _postRepo;
         private readonly ICommentRepository _commentRepo;
 
@@ -25,8 +32,17 @@ namespace TabloidMVC.Controllers
 
         public ActionResult Index(int id)
         {
-            var comments = _commentRepo.GetAllCommentsByPostId(id);
-            return View(comments);
+            CommentViewModel vm = new CommentViewModel()
+            {
+                CommentList = _commentRepo.GetAllCommentsByPostId(id),
+                Posts = new Post()
+                {
+                    Id = id
+                }
+
+        };
+            
+            return View(vm);
         }
 
         // GET: CommentController/Details/5
@@ -36,24 +52,39 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: CommentController/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            return View();
+           Post posts = _postRepo.GetPublishedPostById(id);
+
+            CommentViewModel vm = new CommentViewModel()
+            {
+                Comment = new Comment(),
+                Posts = posts
+            };
+            vm.Comment.PostId = id;
+
+            return View(vm);
         }
 
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Comment Comment, Post Posts)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            //try
+            //{
+                Comment.UserProfileId = GetCurrentUserProfileId();
+                Comment.PostId = Posts.Id;
+
+                _commentRepo.CreateComment(Comment);
+
+                return RedirectToAction("Index", new {id=Comment.PostId});
+
+            //}
+            //catch
+            //{
+            //    return View(comment);
+            //}
         }
 
         // GET: CommentController/Edit/5
