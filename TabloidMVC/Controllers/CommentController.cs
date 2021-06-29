@@ -90,9 +90,14 @@ namespace TabloidMVC.Controllers
         // GET: CommentController/Edit/5
         public ActionResult Edit(int id)
         {
-            Comment comment = _commentRepo.GetCommentById(id);
+            Comment Comment = _commentRepo.GetCommentById(id);
+            CommentViewModel vm = new CommentViewModel()
+            {
+                Comment = Comment
 
-            return View(comment);
+            };
+
+            return View(vm);
         }
 
         // POST: CommentController/Edit/5
@@ -102,9 +107,9 @@ namespace TabloidMVC.Controllers
         {
             try
             {
-                comment.PostId = Posts.Id;
+             
             _commentRepo.UpdateComment(comment);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { id = comment.PostId });
         }
             catch
             {
@@ -133,18 +138,15 @@ namespace TabloidMVC.Controllers
         public ActionResult Delete(int id, Comment comment, Post Posts)
         {
 
-            //try
-            //{
-           
-
-            
+            try
+            {
                 _commentRepo.DeleteComment(id);
                 return RedirectToAction("Index", new { id = comment.PostId });
-            //}
-            //catch
-            //{
-                //return View();
-            //}
         }
+            catch
+            {
+                return View();
+    }
+}
     }
 }
