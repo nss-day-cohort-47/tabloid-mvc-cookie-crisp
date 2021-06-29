@@ -13,6 +13,7 @@ namespace TabloidMVC.Repositories
         List<Tag> GetAllTags();
         Tag GetTagById(int id);
         void AddTag(Tag tag);
+        void UpdateTag(Tag tag);
         void DeleteTag(int tagId);
     }
     //labeled using their type (List, Object(Tag), VOID = a method that is considered "empty"

@@ -125,6 +125,8 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        void UpdateTag(Tag tag);
+
         public void DeleteTag(int tagId)
         {
             using (SqlConnection conn = Connection)
