@@ -104,22 +104,25 @@ namespace TabloidMVC.Controllers
                 return NotFound();
             }
 
-            return View(post);
+            var vm = new PostCreateViewModel();
+            vm.Post = post;
+            vm.CategoryOptions = _categoryRepository.GetAll();
+            return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Post post)
+        public ActionResult Edit(int id, PostCreateViewModel vm)
         {
             try
             {
-                _postRepository.UpdatePost(post);
+                _postRepository.UpdatePost(vm.Post);
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                return View(post);
+                return View(vm.Post);
             }
         }
 
