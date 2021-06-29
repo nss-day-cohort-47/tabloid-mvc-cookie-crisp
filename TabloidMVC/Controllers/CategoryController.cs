@@ -83,7 +83,7 @@ namespace TabloidMVC.Controllers
         // GET: CategoryController/Delete/
         public ActionResult Delete(int id)
         {
-            Category category = _categoryRepositiory.GetCategoryById(id);
+            Category category = _categoryRepository.GetCategoryById(id);
             return View(category);
         }
 
