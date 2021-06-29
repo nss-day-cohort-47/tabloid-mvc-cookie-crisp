@@ -12,13 +12,14 @@ namespace TabloidMVC.Controllers
     public class CategoryController : Controller
     {
 
-       private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private object _categoryRepositiory;
 
-        public CategoryController( ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
-        
+
         // GET: category controller
         public IActionResult Index()
         {
@@ -44,7 +45,7 @@ namespace TabloidMVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
-        
+
         {
             try
             {
@@ -58,6 +59,50 @@ namespace TabloidMVC.Controllers
             }
         }
 
-          
+        // GET: CategoryController/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // POST: CategoryController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: CategoryController/Delete/
+        public ActionResult Delete(int id)
+        {
+            Category category = _categoryRepositiory.GetCategoryById(id);
+            return View(category);
+        }
+
+        // POST: CategoryController/Delete/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Category category)
+        {
+            try
+            {
+                _categoryRepository.DeleteCategory(id);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(category);
+            }
+        }
     }
+
+
 }
