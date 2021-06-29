@@ -79,11 +79,11 @@ namespace TabloidMVC.Repositories
                         cmd.Parameters.AddWithValue("@userprofileid", comment.UserProfileId);
                         cmd.Parameters.AddWithValue("@subject", comment.Subject);
                         cmd.Parameters.AddWithValue("@content", comment.Content);
-                        cmd.Parameters.AddWithValue("@createdatetime", comment.CreateDateTime);
+                        cmd.Parameters.AddWithValue("@createdatetime", (comment.CreateDateTime));
 
-                        comment.Id = (int)cmd.ExecuteScalar(); 
-                    }   
-                
+                    comment.Id = (int)cmd.ExecuteScalar();
+                }
+
             }
 
         }

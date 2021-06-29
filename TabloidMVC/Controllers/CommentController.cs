@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Repositories;
 using Microsoft.VisualBasic;
+using TabloidMVC.Models.ViewModels;
 
 namespace TabloidMVC.Controllers
 {
@@ -42,23 +43,33 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: CommentController/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            return View();
+           Post posts = _postRepo.GetPublishedPostById(id);
+
+            CommentViewModel vm = new CommentViewModel()
+            {
+                Comment = new Comment(),
+                Posts = posts
+            };
+            vm.Comment.PostId = id;
+
+            return View(vm);
         }
 
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Comment comment)
+        public ActionResult Create(Comment Comment, Post Posts)
         {
             //try
             //{
-                comment.UserProfileId = GetCurrentUserProfileId();
+                Comment.UserProfileId = GetCurrentUserProfileId();
+                Comment.PostId = Posts.Id;
 
-                _commentRepo.CreateComment(comment);
+                _commentRepo.CreateComment(Comment);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new {id=Comment.PostId});
 
             //}
             //catch
