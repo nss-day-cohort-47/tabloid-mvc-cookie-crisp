@@ -32,8 +32,17 @@ namespace TabloidMVC.Controllers
 
         public ActionResult Index(int id)
         {
-            var comments = _commentRepo.GetAllCommentsByPostId(id);
-            return View(comments);
+            CommentViewModel vm = new CommentViewModel()
+            {
+                CommentList = _commentRepo.GetAllCommentsByPostId(id),
+                Posts = new Post()
+                {
+                    Id = id
+                }
+
+        };
+            
+            return View(vm);
         }
 
         // GET: CommentController/Details/5
