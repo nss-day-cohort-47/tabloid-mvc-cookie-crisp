@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TabloidMVC.Models.Comment>
+﻿@model  TabloidMVC.Models.ViewModels.CommentViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -7,52 +7,53 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route-id="@Model.Comment.PostId">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-            
+
             <th>
-                @Html.DisplayNameFor(model => model.PostId)
+                @Html.DisplayNameFor(model => model.Comment.PostId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserProfileId)
+                @Html.DisplayNameFor(model => model.Comment.UserProfileId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Subject)
+                @Html.DisplayNameFor(model => model.Comment.Subject)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Content)
+                @Html.DisplayNameFor(model => model.Comment.Content)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreateDateTime)
+                @Html.DisplayNameFor(model => model.Comment.CreateDateTime)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.UserProfileId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Subject)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDateTime)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Comment)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserProfileId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Subject)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDateTime)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
