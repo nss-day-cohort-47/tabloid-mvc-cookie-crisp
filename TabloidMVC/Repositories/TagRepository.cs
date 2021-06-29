@@ -137,11 +137,11 @@ namespace TabloidMVC.Repositories
                             UPDATE Tag
                             SET 
                                 [Name] = @name, 
-                                Breed = @breed, 
-                                Notes = @notes, 
-                                ImageUrl = @imageurl, 
-                                OwnerId = @ownerId
                             WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

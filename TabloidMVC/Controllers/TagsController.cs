@@ -11,10 +11,11 @@ using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
 {
+    //*******************************************GET HELP **********************************************
     public class TagsController : Controller
     {
         private readonly ITagRepository _tagRepo;
-        // ^^ _tagRepo is instance of ITagRepository
+
         public TagsController(ITagRepository tagRepository)
         {
             _tagRepo = tagRepository;
@@ -43,31 +44,7 @@ namespace TabloidMVC.Controllers
         // POST: TagsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Tag tag)
-        {
-            try
-            {
-                _tagRepo.AddTag(tag);
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View(tag);
-            }
-            //use AddTag method to create tag object, then redirect user to Index view
-        }
-
-        // GET: TagsController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TagsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Create(IFormCollection collection)
         {
             try
             {
@@ -79,26 +56,47 @@ namespace TabloidMVC.Controllers
             }
         }
 
+        // GET: TagsController/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // POST: TagsController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Tag tag)
+        {
+            try
+            {
+                _tagRepo.UpdateTag(tag);
+                //UpdateTag() is imported from TagRepository.cs 
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View(tag);
+            }
+        }
+
         // GET: TagsController/Delete/5
         public ActionResult Delete(int id)
         {
-            Tag tag = _tagRepo.GetTagById(id);
-            return View(tag);
+            return View();
         }
 
         // POST: TagsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Tag tag)
+        public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
-                _tagRepo.DeleteTag(id);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View(tag);
+                return View();
             }
         }
     }
