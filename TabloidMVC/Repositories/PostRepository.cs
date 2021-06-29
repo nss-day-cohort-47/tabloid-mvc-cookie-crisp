@@ -33,7 +33,9 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN Category c ON p.CategoryId = c.id
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()";
+                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()
+                        ORDER BY PublishDateTime Asc";
+
                     var reader = cmd.ExecuteReader();
 
                     var posts = new List<Post>();
@@ -72,9 +74,10 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
                         WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME()
-                              AND p.id = @id";
-
+                              AND p.Id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
+
+
                     var reader = cmd.ExecuteReader();
 
                     Post post = null;
@@ -132,6 +135,71 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public List<Post> GetUsersPosts(int userProfileId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT	p.Id,
+		                        p.Title,
+		                        p.Content,
+		                        p.ImageLocation,
+		                        p.CreateDateTime,
+		                        p.PublishDateTime,
+		                        p.IsApproved,
+                                p.UserProfileId,
+                                p.CategoryId,
+		                        c.Name AS Category
+                        FROM Post p
+                        LEFT JOIN Category c ON c.Id = p.CategoryId
+                        WHERE p.UserProfileId = @id
+                        ORDER BY p.CreateDateTime ASC
+                    ";
+                    cmd.Parameters.AddWithValue("@id", userProfileId);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Post> posts = new List<Post>();
+
+                    while (reader.Read())
+                    {
+                        Post post = new Post()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Content = reader.GetString(reader.GetOrdinal("Content")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                            IsApproved = reader.GetBoolean(reader.GetOrdinal("IsApproved")),
+                            UserProfileId = reader.GetInt32(reader.GetOrdinal("UserProfileId")),
+                            CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                            Category = new Category()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                                Name = reader.GetString(reader.GetOrdinal("Category"))
+                            }
+                        };
+
+                        if (reader.IsDBNull(reader.GetOrdinal("ImageLocation")) == false)
+                        {
+                            post.ImageLocation = reader.GetString(reader.GetOrdinal("ImageLocation"));
+                        }
+
+                        if (reader.IsDBNull(reader.GetOrdinal("PublishDateTime")) == false)
+                        {
+                            post.PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime"));
+                        }
+
+                        posts.Add(post);
+                    }
+
+                    reader.Close();
+                    return posts;
+                }
+            }
+        }
 
         public void Add(Post post)
         {
@@ -158,6 +226,55 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@UserProfileId", post.UserProfileId);
 
                     post.Id = (int)cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        public void UpdatePost(Post post)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Post
+                            SET 
+                                Title = @Title, 
+                                Content = @Content,  
+                                ImageLocation = @ImageLocation,
+                                PublishDateTime = @PublishDateTime,
+                                CategoryId = @CategoryId
+                            WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@Title", post.Title);
+                    cmd.Parameters.AddWithValue("@Content", post.Content);
+                    cmd.Parameters.AddWithValue("@ImageLocation", DbUtils.ValueOrDBNull(post.ImageLocation));
+                    cmd.Parameters.AddWithValue("@PublishDateTime", DbUtils.ValueOrDBNull(post.PublishDateTime));
+                    cmd.Parameters.AddWithValue("@CategoryId", post.CategoryId);
+                    cmd.Parameters.AddWithValue("@id", post.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeletePost(int postId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            DELETE FROM Post
+                            WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", postId);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

@@ -40,7 +40,7 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"
                     SELECT Id, [Name] 
                     FROM Tag
-ORDER BY name ASC ";
+                    ORDER BY name ASC ";
                     //SQL request to database
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -64,6 +64,89 @@ ORDER BY name ASC ";
                     //close connection and return full list
                 }
             }
+        }
+
+        public Tag GetTagById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, [Name]
+                        FROM Tag
+                        WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        Tag tag = new Tag
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+                        reader.Close();
+                        return tag;
+                    }
+                    else
+                    {
+                        reader.Close();
+                        return null;
+                    }
+                }
+            }
+        }
+        public void AddTag(Tag tag)
+        // 'void' signifies a method (carries out a SQL request)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                //open connection
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Tag ([Name])
+                    OUTPUT INSERTED.ID
+                    VALUES (@name);
+                    ";
+
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
+                    // "OUTPUT INSERTED.ID" tells program to create id // AddWithValue handles object and database interaction using tag.Name, which tells which column and row to target
+
+                    int newlyCreatedId = (int)cmd.ExecuteScalar();
+                    tag.Id = newlyCreatedId;
+                }
+            }
+        }
+
+        public void DeleteTag(int tagId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                //open connection
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        DELETE FROM Tag
+                        WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", tagId);
+
+                    cmd.ExecuteNonQuery();
+                    //not returning any data
+                }
+
+            }
+
         }
     }
 }

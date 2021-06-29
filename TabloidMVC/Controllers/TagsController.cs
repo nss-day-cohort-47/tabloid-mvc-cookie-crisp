@@ -11,11 +11,10 @@ using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
 {
-    //*******************************************GET HELP **********************************************
     public class TagsController : Controller
     {
         private readonly ITagRepository _tagRepo;
-
+        // ^^ _tagRepo is instance of ITagRepository
         public TagsController(ITagRepository tagRepository)
         {
             _tagRepo = tagRepository;
@@ -44,16 +43,19 @@ namespace TabloidMVC.Controllers
         // POST: TagsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Tag tag)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _tagRepo.AddTag(tag);
+
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(tag);
             }
+            //use AddTag method to create tag object, then redirect user to Index view
         }
 
         // GET: TagsController/Edit/5
@@ -80,21 +82,23 @@ namespace TabloidMVC.Controllers
         // GET: TagsController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            Tag tag = _tagRepo.GetTagById(id);
+            return View(tag);
         }
 
         // POST: TagsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Tag tag)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _tagRepo.DeleteTag(id);
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(tag);
             }
         }
     }

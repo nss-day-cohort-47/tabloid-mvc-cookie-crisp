@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 
@@ -60,7 +63,7 @@ namespace TabloidMVC.Controllers
                 _postRepository.Add(vm.Post);
 
                 return RedirectToAction("Details", new { id = vm.Post.Id });
-            } 
+            }
             catch
             {
                 vm.CategoryOptions = _categoryRepository.GetAll();
@@ -68,10 +71,73 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        private int GetCurrentUserProfileId()
+        public ActionResult Delete(int id)
         {
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            return View(post);
+        }
+
+        // POST: Post/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int Id, Post post)
+        {
+            try
+            {
+                _postRepository.DeletePost(Id);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(post);
+            }
+        }
+
+        public ActionResult Edit(int id)
+        {
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new PostCreateViewModel();
+            vm.Post = post;
+            vm.CategoryOptions = _categoryRepository.GetAll();
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, PostCreateViewModel vm)
+        {
+            try
+            {
+                _postRepository.UpdatePost(vm.Post);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(vm.Post);
+            }
+        }
+
+        public IActionResult MyPosts()
+            {
+                int CurrentUser = GetCurrentUserProfileId();
+                List<Post> posts = _postRepository.GetUsersPosts(CurrentUser);
+                return View(posts);
+            }
+
+        private int GetCurrentUserProfileId()
+          {
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return int.Parse(id);
-        }
-    }
+          }
+     }
+
 }
