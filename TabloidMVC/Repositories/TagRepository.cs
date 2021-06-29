@@ -125,9 +125,6 @@ namespace TabloidMVC.Repositories
             }
         }
 
-<<<<<<< HEAD
-        void UpdateTag(Tag tag);
-=======
         public void UpdateTag(Tag tag)
         {
             using (SqlConnection conn = Connection)
@@ -148,7 +145,6 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
->>>>>>> editTag-bk
 
         public void DeleteTag(int tagId)
         {
