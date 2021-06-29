@@ -125,6 +125,27 @@ namespace TabloidMVC.Repositories
             }
         }
 
+        public void UpdateTag(Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Tag
+                            SET 
+                                [Name] = @name, 
+                                Breed = @breed, 
+                                Notes = @notes, 
+                                ImageUrl = @imageurl, 
+                                OwnerId = @ownerId
+                            WHERE Id = @id";
+                }
+            }
+        }
+
         public void DeleteTag(int tagId)
         {
             using (SqlConnection conn = Connection)
