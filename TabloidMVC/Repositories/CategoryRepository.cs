@@ -31,7 +31,7 @@ namespace TabloidMVC.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("name")),
                         };
-                    categories.Add(category);
+                        categories.Add(category);
                     }
 
                     reader.Close();
@@ -41,12 +41,14 @@ namespace TabloidMVC.Repositories
             }
         }
 
+
+
         public void AddCategory(Category category)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
-                //open connection
+             
 
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
@@ -57,7 +59,7 @@ namespace TabloidMVC.Repositories
                     ";
 
                     cmd.Parameters.AddWithValue("@name", category.Name);
-                    // "OUTPUT INSERTED.ID" tells program to create id // AddWithValue adds object to the database and tag.Name tells which column and row
+                 
 
                     int newlyCreatedId = (int)cmd.ExecuteScalar();
                     category.Id = newlyCreatedId;
@@ -65,5 +67,84 @@ namespace TabloidMVC.Repositories
             }
 
         }
+
+        public Category GetCategoryById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, [Name]
+                        FROM Category
+                        WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        Category category = new Category
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+                        reader.Close();
+                        return category;
+                    }
+                    else
+                    {
+                        reader.Close();
+                        return null;
+                    }
+                }
+            }
+        }
+
+        public void UpdateCategory(Category category)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE Category 
+                                        SET Name = @name
+                                        WHERE Id = @id;";
+
+                    cmd.Parameters.AddWithValue("@id", category.Id);
+                    cmd.Parameters.AddWithValue("@name", category.Name);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteCategory(int categoryId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        DELETE FROM Category
+                        WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", categoryId);
+
+                    cmd.ExecuteNonQuery();
+                    
+                }
+
+            }
+
+        }
+
     }
 }
