@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using TabloidMVC.Models;
 using TabloidMVC.Utils;
 
@@ -7,6 +8,34 @@ namespace TabloidMVC.Repositories
     public class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
         public UserProfileRepository(IConfiguration config) : base(config) { }
+
+        public UserProfile Add(UserProfile user)
+
+
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        INSERT INTO Userprofile (
+                            DisplayName, FirstName, LastName, Email, CreateDateTime, UserTypeId )
+                        OUTPUT INSERTED.ID
+                        VALUES ( @DisplayName, @FirstName, @LastName, @Email, @CreateDateTime, @UserTypeId)";
+                    cmd.Parameters.AddWithValue("@DisplayName", user.DisplayName);
+                    cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
+                    cmd.Parameters.AddWithValue("@LastName", user.LastName);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@CreateDateTime", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@UserTypeId", 2);
+
+
+                    user.Id = (int)cmd.ExecuteScalar();
+                    return user;
+                }
+            }
+        }
 
         public UserProfile GetByEmail(string email)
         {
