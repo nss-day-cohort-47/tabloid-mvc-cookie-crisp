@@ -259,6 +259,29 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+
+        public void AddTagToPost(int PostId, int TagId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    SELECT * 
+                    from Post 
+                    JOIN @Post.Id = PostTag.PostId ON PostTag
+                    JOIN @Tag.Id = PostTag.TagId ON Tag
+                    INSERT into PostTag(PostId, TagId)
+                    values(1,1)";
+
+                    cmd.Parameters.AddWithValue("@PostId", PostId);
+                    cmd.Parameters.AddWithValue("@TagId", TagId);
+                }
+                //^^^ check if this doesnt work ********************************************************************************
+            }
+        }
         public void DeletePost(int postId)
         {
             using (SqlConnection conn = Connection)
