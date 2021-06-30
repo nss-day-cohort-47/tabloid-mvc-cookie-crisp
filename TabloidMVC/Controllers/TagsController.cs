@@ -28,6 +28,7 @@ namespace TabloidMVC.Controllers
             return View(tags);
         }
 
+       
         // GET: TagsController/Details/5
         public ActionResult Details(int id)
         {
@@ -61,23 +62,32 @@ namespace TabloidMVC.Controllers
         // GET: TagsController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
-        }
+            Tag tag = _tagRepo.GetTagById(id);
 
+            if (tag == null)
+            {
+                return NotFound();
+            }
+
+            return View(tag);
+        }
         // POST: TagsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Tag tag)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _tagRepo.UpdateTag(tag);
+                //UpdateTag() is imported from TagRepository.cs
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(tag);
             }
         }
+
 
         // GET: TagsController/Delete/5
         public ActionResult Delete(int id)
