@@ -22,7 +22,11 @@
                 <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-primary mx-1" title="Delete">
                     <i class="fas fa-trash"></i>
                 </a>
-                <a asp-controller="Comment" asp-action="Index"  asp-route-id="@Model.Id" title="Comments">
+                <a asp-controller="Comment" asp-action="Index" asp-route-id="@Model.Id" title="Comments">
+                    <i class="fas fa-comments"></i>
+                </a>
+                <a asp-controller="Post" asp-action="CreatePostTag" asp-route-id="@Model.Id" title="Manage Tags">
+                    @*asp-action navigates to the CreatePostTag method in the postController*@
                     <i class="fas fa-comments"></i>
                 </a>
             </div>
