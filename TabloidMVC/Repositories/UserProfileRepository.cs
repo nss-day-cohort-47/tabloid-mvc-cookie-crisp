@@ -10,6 +10,51 @@ namespace TabloidMVC.Repositories
     public class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
         public UserProfileRepository(IConfiguration config) : base(config) { }
+
+        public UserProfile GetProfileById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                SELECT u.Id, u.FirstName, u.LastName, u.DisplayName, u.Email, u.CreateDateTime, u.ImageLocation, u.UserTypeId, ut.[Name] as UserTypeName
+                                FROM userprofile u
+                                LEFT JOIN usertype ut on u.usertypeid = ut.id
+                                WHERE u.id=@id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    UserProfile userProfile = null;
+                    if(reader.Read())
+                    {
+                        userProfile = new UserProfile()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
+                            Email = reader.GetString(reader.GetOrdinal("Email")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                            UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                            UserType = new UserType()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                                Name = reader.GetString(reader.GetOrdinal("UserTypeName"))
+                            },
+                        };
+
+                        if (reader.IsDBNull(reader.GetOrdinal("ImageLocation")) ==false)
+                        {
+                            userProfile.ImageLocation = reader.GetString(reader.GetOrdinal("ImageLocation"));
+                        }
+                    }
+                    reader.Close();
+                    return userProfile;
+                }
+            }
+        }
         public List<UserProfile> GetAllUserProfiles()
         {
             using(SqlConnection conn = Connection)
